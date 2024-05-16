@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Сравнение моделей</title>
+    <style>
+        body {
+            font-family: "Arial", sans-serif;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 2px solid #000; /* Увеличьте толщину границ */
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        .match-cell {
+            background-color: #c8e6c9; /* Зеленый цвет для совпадающих значений */
+        }
+
+        .mismatch-cell {
+            background-color: #ffcdd2; /* Красный цвет для несовпадающих значений */
+        }
+    </style>
+</head>
+<body>
+    <h1>Сравнение моделей</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="model1">Загрузите модель 1 (.h5 файл):</label>
+        <input type="file" name="model1" accept=".h5" required>
+        <span>
+            {% if previous_files.model1 %}
+                Предыдущий файл: {{ previous_files.model1 }}
+            {% endif %}
+        </span>
+        <br>
+        <label for="model2">Загрузите модель 2 (.h5 файл):</label>
+        <input type="file" name="model2" accept=".h5" required>
+        <span>
+            {% if previous_files.model2 %}
+                Предыдущий файл: {{ previous_files.model2 }}
+            {% endif %}
+        </span>
+        <br>
+        <button type="submit">Сравнить модели</button>
+    </form>
+
+    {% if comparison_result %}
+    <h2>Результат сравнения</h2>
+    <table>
+        <tr>
+            <th>Layer Name</th>
+            <th>Parameter Name</th>
+            <th>Model 1 Value</th>
+            <th>Model 2 Value</th>
+            <th>Parameters Match</th>
+        </tr>
+        {% for result in comparison_result %}
+            <tr>
+                <td>{{ result['Layer Name'] }}</td>
+            </tr>
+            {% for param_diff in result['Parameter Diff'] %}
+                <tr>
+                    <td></td>
+                    <td>{{ param_diff[0] }}</td>
+                    <td class="{% if param_diff[3] %}match-cell{% else %}mismatch-cell{% endif %}">{{ param_diff[1] }}</td>
+                    <td class="{% if param_diff[3] %}match-cell{% else %}mismatch-cell{% endif %}">{{ param_diff[2] }}</td>
+                    <td class="{% if param_diff[3] %}match-cell{% else %}mismatch-cell{% endif %}">
+                        {% if param_diff[3] %}Совпадает{% else %}Не совпадает{% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    </table>
+{% endif %}
+</body>
+</html>
